@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- namespace命名空间，对sql进行分类化管理，实现sql隔离
+ 注意：使用mapper代理开发时，namespace将有特殊重要的意义
+  -->
+<mapper namespace="test">
+	<!-- parameterType 输入参数类型 -->
+	<select id="queryItemById" parameterType="int" resultType="com.rf.m.po.Item">
+		SELECT * FROM item WHERE id=#{id}
+	</select>
+	
+	<!-- resultType 指的是单条记录的对象 
+	${}：将接收到的参数不加修饰拼接到sql中（可能会引起sql注入）
+	${value}接收输入参数内容，如果输入的参数是简单类型，${}中只能使用value
+	-->
+	<select id="queryItemByName" parameterType="java.lang.String" resultType="com.rf.m.po.Item">
+		SELECT * FROM item WHERE name like '%${value}%'
+	</select>
+	
+	<insert id="insertItem" parameterType="com.rf.m.po.Item" >
+		<!-- mysql得到刚insert的那条记录主键的值  只适用于自增主键
+		keyProperty 将查询到的主键设置到parameterType指定对象的哪个属性
+		order 相对于insert语句来说selectKey中语句的执行顺序
+		resultType 指定结果类型
+		非自增的主键如uuid(),可以把order改为BEFORE实现
+		-->
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.String">
+		SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO item (name,price,detail,createtime) VALUE(#{name},#{price},#{detail},#{createtime})
+	</insert>
+	
+	<delete id="deleteItem" parameterType="int">
+		DELETE FROM item WHERE id=#{id}
+	</delete>
+	
+	<update id="updateItem" parameterType="com.rf.m.po.Item">
+		UPDATE item SET NAME=#{name},price=#{price},detail=#{detail},createtime=#{createtime} WHERE id=#{id}
+	</update>
+</mapper>

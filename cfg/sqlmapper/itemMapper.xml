@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- namespace命名空间，对sql进行分类化管理，实现sql隔离
+ 注意：使用mapper代理开发时，namespace将有特殊重要的意义
+  -->
+<mapper namespace="com.rf.m.mapper.ItemMapper">
+	<!-- parameterType 输入参数类型 -->
+	<select id="queryItemById" parameterType="int" resultType="item">
+		SELECT * FROM item WHERE id=#{id}
+	</select>
+</mapper>

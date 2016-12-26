@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 加载属性文件 -->
+	<properties resource="db.properties">
+		<!-- 内部也可以加载属性
+		mybatis属性加载顺序 property->.properties配置文件->parameterType
+		建议将配置属性全部写在.properties配置文件中
+		 -->
+		<!-- <property name="" value=""/> -->
+	</properties>
+	
+	<!-- 别名定义 -->
+	<typeAliases>
+		<!-- 单个别名定义 
+		<typeAlias type="com.rf.m.po.Item" alias="item"/>-->
+		<!-- 批量别名定义
+		指定包名，mybatis自动扫描包下的po类，自动定义别名，别名就是类名（首字母大写或小写都可以）
+		 -->
+		<package name="com.rf.m.po"/>
+	</typeAliases>
+	
+	<!-- 和spring整合后environments标签将移除 -->
+	<environments default="development">
+		<environment id="development">
+			<!-- 使用jdbc事务管理 事物控制由mybatis管理 -->
+			<transactionManager type="JDBC" />
+			<!-- 数据库连接池 由mybatis管理-->
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="sqlmap/item.xml" />
+		<!-- 通过resource方法一次加载一个映射文件 
+		<mapper resource="sqlmapper/itemMapper.xml" />-->
+		<!-- 通过mapper接口加载映射文件
+		遵循一些规范：需要将mapper接口类名和mapper.xml映射文件名保持一致，且在一个目录中
+		上边规范的前提是：使用的mapper代理方法
+		 
+		<mapper class="com.rf.m.mapper.ItemMapper"/>-->
+		<!-- 批量加载mapper
+		指定mapper接口的包名，mybatis自动扫描包下所有mapper接口进行加载
+		遵循一些规范：需要将mapper接口类名和mapper.xml映射文件名保持一致，且在一个目录中
+		上边规范的前提是：使用的mapper代理方法
+		 -->
+		 <package name="com.rf.m.mapper"/>
+	</mappers>
+</configuration>

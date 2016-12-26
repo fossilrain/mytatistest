@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <!-- namespace命名空间，对sql进行分类化管理，实现sql隔离
+ 注意：使用mapper代理开发时，namespace将有特殊重要的意义
+  -->
+<mapper namespace="com.rf.m.mapper.OrdersMapperCustom">
+	<resultMap type="orders" id="ordersUsersResultMap">
+		<id column="id" property="id"/>
+		<result column="userId" property="userId"/>
+		<result column="createDate" property="createDate"/>
+		<!-- 配置映射关联的用户信息 -->
+		<association property="users" javaType="com.rf.m.po.Users">
+			<!-- id:关联查询用户的唯一标示 
+			column：指定唯一标示的列
+			property：映射到users的哪个属性
+			-->
+			<id column="userId" property="id"/>
+			<result column="name" property="name"/>
+			<result column="sex" property="sex"/>
+			<result column="address" property="address"/>
+		</association>
+	
+	</resultMap>
+	<resultMap type="orders" id="ordersUsersODetailResultMap" extends="ordersUsersResultMap">
+		<!-- 该resultMap中与上边resultMap重复的可以使用继承 extends-->
+		<!-- 订单明细信息
+		一个订单对应多条明细使用collection进行映射
+		ofType指定映射到list中的pojo类型
+		 -->
+		<collection property="odli" ofType="orderdetail">
+			<id column="orderdetailId" property="id"/>
+			<result column="order_id" property="orderId"/>
+			<result column="item_id" property="itemId"/>
+			<result column="count_buy" property="countBuy"/>
+		</collection>
+	</resultMap>
+	<!-- 用户商品关联 -->
+	<resultMap type="com.rf.m.po.Users" id="userItemResultMap">
+		<id column="userId" property="id"/>
+		<result column="name" property="name"/>
+		<result column="sex" property="sex"/>
+		<result column="address" property="address"/>
+		<!-- 一个用户包含多个订单 -->
+		<collection property="lo" ofType="com.rf.m.po.Orders">
+			<id column="id" property="id"/>
+			<result column="userId" property="userId"/>
+			<result column="createDate" property="createDate"/>
+			<!-- 一个订单包含多个订单明细 -->
+			<collection property="odli" ofType="com.rf.m.po.Orderdetail">
+				<id column="orderdetailId" property="id"/>
+				<result column="order_id" property="orderId"/>
+				<result column="item_id" property="itemId"/>
+				<result column="count_buy" property="countBuy"/>
+				<!-- 一个订单明细对应一个商品信息 -->
+				<association property="item" javaType="com.rf.m.po.Item">
+					<id column="itemId" property="id"/>
+					<result column="itemName" property="name"/>
+					<result column="itemPrice" property="price"/>
+				</association>
+			</collection>
+		</collection>
+	</resultMap>
+	
+	<select id="queryOrdersWithUserInfo" resultType="ordersCustom">
+		SELECT 
+		  o.`id`,
+		  o.`user_id` userId,
+		  o.`create_date` createDate,
+		  u.`name`,
+		  u.`sex`,
+		  u.`address` 
+		FROM
+		  orders o 
+		  LEFT JOIN users u 
+		    ON o.`user_id` = u.`id` 
+	</select>
+	<select id="queryOrdersUserResultMap" resultMap="ordersUsersResultMap">
+		SELECT 
+		  o.`id`,
+		  o.`user_id` userId,
+		  o.`create_date` createDate,
+		  u.`name`,
+		  u.`sex`,
+		  u.`address` 
+		FROM
+		  orders o 
+		  LEFT JOIN users u 
+		    ON o.`user_id` = u.`id` 
+	</select>
+	<select id="queryOrdersUserODetailResultMap" resultMap="ordersUsersODetailResultMap">
+		SELECT 
+		  o.`id`,
+		  o.`user_id` userId,
+		  o.`create_date` createDate,
+		  u.`name`,
+		  u.`sex`,
+		  u.`address`,
+		  od.`id` orderdetailId,
+		  od.`order_id`,
+		  od.`item_id`,
+		  od.`count_buy` 
+		FROM
+		  orders o 
+		  LEFT JOIN users u 
+		    ON o.`user_id` = u.`id` 
+		  LEFT JOIN orderdetail od 
+		    ON od.`order_id` = o.`id` 
+	</select>
+	<select id="queryUserItemResultMap" resultMap="userItemResultMap">
+		SELECT 
+		  o.`id`,
+		  o.`user_id` userId,
+		  o.`create_date` createDate,
+		  u.`name`,
+		  u.`sex`,
+		  u.`address`,
+		  od.`id` orderdetailId,
+		  od.`order_id`,
+		  od.`item_id`,
+		  od.`count_buy`,
+		  i.`id` itemId,
+		  i.`name` itemName,
+		  i.`price` itemPrice 
+		FROM
+		  orders o 
+		  LEFT JOIN users u 
+		    ON o.`user_id` = u.`id` 
+		  LEFT JOIN orderdetail od 
+		    ON od.`order_id` = o.`id` 
+		  LEFT JOIN item i 
+		    ON i.`id` = od.`item_id` 
+	</select>
+</mapper>
