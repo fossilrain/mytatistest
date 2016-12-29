@@ -132,4 +132,33 @@
 		  LEFT JOIN item i 
 		    ON i.`id` = od.`item_id` 
 	</select>
+	<!-- 延迟加载 -->
+	<resultMap type="orders" id="ordersUsersLazyResultMap">
+		<id column="id" property="id"/>
+		<result column="userId" property="userId"/>
+		<result column="createDate" property="createDate"/>
+		<!-- 配置映射关联的用户信息 -->
+		<association property="users" javaType="com.rf.m.po.Users" select="queryUserInfo" column="userId">
+			<!-- id:关联查询用户的唯一标示 
+			column：指定唯一标示的列
+			property：映射到users的哪个属性
+			-->
+			<!-- <id column="userId" property="id"/>
+			<result column="name" property="name"/>
+			<result column="sex" property="sex"/>
+			<result column="address" property="address"/> -->
+		</association>
+	
+	</resultMap>
+	<select id="queryUserInfo" parameterType="int" resultType="com.rf.m.po.Users">
+		SELECT * FROM users where id = #{id}
+	</select>
+	<select id="queryOrdersUserLazyResultMap" resultMap="ordersUsersLazyResultMap">
+		SELECT 
+		  o.`id`,
+		  o.`user_id` userId,
+		  o.`create_date` createDate
+		FROM
+		  orders o
+	</select>
 </mapper>

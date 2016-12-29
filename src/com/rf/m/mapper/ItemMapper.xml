@@ -6,6 +6,8 @@
  注意：使用mapper代理开发时，namespace将有特殊重要的意义
   -->
 <mapper namespace="com.rf.m.mapper.ItemMapper">
+	<!-- 开启本mapper所在namespace下的二级缓存 -->
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>
 	<!-- 定义resultMap
 	将SELECT id id_,NAME name_,detail detail_ FROM item 和Item类中的属性做一个映射关系
 	type： resultMap最终映射的java对象类型，可以使用别名
@@ -95,4 +97,8 @@
 			<include refid="query_item_where"></include>
 		</where>
 	</select>
+	<!-- 更新商品信息 -->
+	<update id="updateItem" parameterType="com.rf.m.po.Item">
+		UPDATE item SET NAME=#{name},price=#{price},detail=#{detail} WHERE id=#{id}
+	</update>
 </mapper>

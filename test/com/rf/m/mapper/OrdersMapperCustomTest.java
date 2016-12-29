@@ -63,4 +63,16 @@ public class OrdersMapperCustomTest {
 		sqlSession.close();
 		System.out.println(li);
 	}
+	@Test
+	public void testQueryOrdersUserLazyResultMap() throws Exception {
+		SqlSession sqlSession=sqlSessionFactory.openSession();
+		OrdersMapperCustom omc=sqlSession.getMapper(OrdersMapperCustom.class);
+		List<Orders> li=omc.queryOrdersUserLazyResultMap();
+		sqlSession.close();
+//		System.out.println(li);
+		for(Orders o:li){
+			Users u=o.getUsers();
+			System.out.println(u);
+		}
+	}
 }

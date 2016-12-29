@@ -1,8 +1,9 @@
 package com.rf.m.po;
 
+import java.io.Serializable;
 import java.util.Date;
-
-public class Item {
+//实现序列化接口为了取出缓存数据的反序列话，因为缓存数据不一定存储在内存中
+public class Item implements Serializable{
 	private String id;
 	private String name;
 	private String price;

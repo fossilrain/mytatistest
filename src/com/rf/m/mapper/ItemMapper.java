@@ -17,4 +17,6 @@ public interface ItemMapper {
 	public List<ItemCustom> findItemList(ItemQueryVo itemQueryVo) throws IOException;
 	//综合查询总数（使用包装对象）
 	public int findItemCount(ItemQueryVo itemQueryVo) throws IOException;
+	//更新商品信息
+	public void updateItem(Item item)throws IOException;
 }

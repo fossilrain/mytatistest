@@ -40,6 +40,10 @@ public class Users {
 	public void setLo(List<Orders> lo) {
 		this.lo = lo;
 	}
+	@Override
+	public String toString() {
+		return "Users [id=" + id + ", name=" + name + ", sex=" + sex + ", address=" + address + ", lo=" + lo + "]";
+	}
 	
 	
 }

@@ -83,4 +83,50 @@ public class ItemMapperTest {
 		sqlSession.close();
 		System.out.println("总数："+count);
 	}
+	//一级缓存测试
+	@Test
+	public void testCache1() throws IOException {
+		SqlSession sqlSession=sqlSessionFactory.openSession();
+		ItemMapper im=sqlSession.getMapper(ItemMapper.class);
+		//一级缓存限于同一个session 一下查询更改需要使用同一个session
+		Item item1=im.queryItemById(3);
+		System.out.println(item1);
+		//两次请求之间进行了修改操作缓存将清空
+		/*item1.setPrice("99999999");
+		im.updateItem(item1);
+		sqlSession.commit();*/
+		
+		Item item2=im.queryItemById(3);
+		System.out.println(item2);
+		
+		sqlSession.close();
+	}
+	//二级缓存测试
+	@Test
+	public void testCache2() throws IOException {
+		SqlSession sqlSession1 = sqlSessionFactory.openSession();
+		SqlSession sqlSession2 = sqlSessionFactory.openSession();
+		SqlSession sqlSession3 = sqlSessionFactory.openSession();
+		
+		
+		ItemMapper im1 = sqlSession1.getMapper(ItemMapper.class);
+		ItemMapper im2 = sqlSession2.getMapper(ItemMapper.class);
+		ItemMapper im3 = sqlSession3.getMapper(ItemMapper.class);
+		// 一级缓存限于同一个session 一下查询更改需要使用同一个session
+		Item item1 = im1.queryItemById(3);
+		//这里执行关闭操作会将sqlSession1中的信息写入到二级缓存区域
+		sqlSession1.close();
+		System.out.println(item1);
+		
+		// 两次请求之间进行了修改操作缓存将清空
+		item1.setPrice("1.99999999");
+		im3.updateItem(item1);
+		sqlSession3.commit();
+		sqlSession3.close();
+
+		Item item2 = im2.queryItemById(3);
+		sqlSession2.close();
+		System.out.println(item2);
+
+	}
 }
